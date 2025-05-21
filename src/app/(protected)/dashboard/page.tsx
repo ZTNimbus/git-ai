@@ -1,10 +1,14 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import useProject from "~/hooks/use-project";
 
 function Dashboard() {
-  const { user } = useUser();
-  return <div>{user?.fullName}</div>;
+  const { project } = useProject();
+  return (
+    <div>
+      <h1>{project?.name}</h1>
+    </div>
+  );
 }
 
 export default Dashboard;

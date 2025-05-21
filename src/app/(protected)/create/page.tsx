@@ -1,10 +1,13 @@
 "use client";
 
-import { File, GitBranch, Github, PaintBucket, StoreIcon } from "lucide-react";
+import { GitBranch } from "lucide-react";
 import Image from "next/image";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import useRefetch from "~/hooks/use-refetch";
+import { api } from "~/trpc/react";
 
 type FormInput = {
   repoUrl: string;
@@ -15,8 +18,27 @@ type FormInput = {
 function Create() {
   const { register, handleSubmit, reset } = useForm<FormInput>();
 
+  const createProject = api.project.createProject.useMutation();
+
+  const refetch = useRefetch();
+
   function onSubmit(data: FormInput) {
-    alert(JSON.stringify(data));
+    createProject.mutate(
+      {
+        githubUrl: data.repoUrl,
+        name: data.projectName,
+        githubToken: data.githubToken,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Successfully created project");
+          refetch();
+          reset();
+        },
+
+        onError: () => toast.error("Failed creating new project"),
+      },
+    );
 
     return true;
   }
@@ -72,7 +94,9 @@ function Create() {
 
             <div className="h-4"></div>
 
-            <Button type="submit">Create Project</Button>
+            <Button type="submit" disabled={createProject.isPending}>
+              Create Project
+            </Button>
           </form>
         </div>
       </div>

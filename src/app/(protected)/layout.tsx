@@ -8,7 +8,7 @@ function SidebarLayout({ children }: PropsWithChildren) {
     <SidebarProvider>
       <AppSidebar />
 
-      <main className="m-2 w-full">
+      <main className="m-2 w-full space-y-5">
         <div className="border-sidebar-border bg-sidebar p flex items-center gap-2 rounded-md border p-2 px-4 shadow">
           {/* <SearchBar /> */}
 

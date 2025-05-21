@@ -4,6 +4,7 @@ import { type Metadata } from "next";
 import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Git Ai",
@@ -26,6 +27,7 @@ export default function RootLayout({
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </body>
       </html>
+      <Toaster richColors />
     </ClerkProvider>
   );
 }
