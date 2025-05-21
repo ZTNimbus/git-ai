@@ -18,7 +18,9 @@ function SidebarLayout({ children }: PropsWithChildren) {
         </div>
 
         <div className="h-4">
-          <div className="border-sidebar-border bg-sidebar h-[calc(100vh-8rem)] overflow-y-scroll rounded-md border p-4 shadow"></div>
+          <div className="border-sidebar-border bg-sidebar h-[calc(100vh-8rem)] overflow-y-scroll rounded-md border p-4 shadow">
+            {children}
+          </div>
         </div>
       </main>
     </SidebarProvider>
