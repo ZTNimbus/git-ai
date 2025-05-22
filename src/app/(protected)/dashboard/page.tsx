@@ -3,6 +3,7 @@
 import { ExternalLink, Github } from "lucide-react";
 import Link from "next/link";
 import useProject from "~/hooks/use-project";
+import CommitLog from "./commit-log";
 
 function Dashboard() {
   const { project } = useProject();
@@ -34,6 +35,13 @@ function Dashboard() {
           Team Members Invite Button Archive Button
         </div>
       </div>
+      <div className="mt-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-5">
+          AskQuestionCard MeetingCard
+        </div>
+      </div>
+      <div className="mt-8"></div>
+      <CommitLog />
     </div>
   );
 }

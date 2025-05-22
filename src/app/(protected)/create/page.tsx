@@ -32,7 +32,7 @@ function Create() {
       {
         onSuccess: () => {
           toast.success("Successfully created project");
-          refetch();
+          void refetch();
           reset();
         },
 
@@ -89,7 +89,7 @@ function Create() {
 
             <Input
               {...register("githubToken")}
-              placeholder="Github Token(optional, only required for private repositories"
+              placeholder="Github Token(optional, only required for private repositories)"
             />
 
             <div className="h-4"></div>
