@@ -1,5 +1,6 @@
 "use client";
 
+import MDEditor from "@uiw/react-md-editor";
 import { useState, type FormEvent } from "react";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
@@ -11,25 +12,92 @@ import {
 } from "~/components/ui/dialog";
 import { Textarea } from "~/components/ui/textarea";
 import useProject from "~/hooks/use-project";
+import { askQuestion } from "./actions";
+import { readStreamableValue } from "ai/rsc";
+import CodeReferences from "./code-rerefences";
+import { api } from "~/trpc/react";
+import { toast } from "sonner";
 
 function AskQuestionCard() {
   const { project } = useProject();
   const [question, setQuestion] = useState("");
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [filesReferences, setFilesReferences] = useState<
+    {
+      fileName: string;
+      sourceCode: string;
+      summary: string;
+    }[]
+  >([]);
+  const [answer, setAnswer] = useState("");
+  const saveAnswer = api.project.saveAnswer.useMutation();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setFilesReferences([]);
+    if (!project?.id) return;
+    setLoading(true);
+    setAnswer("");
+
+    const { output, filesReferences } = await askQuestion(question, project.id);
 
     setOpen(true);
+    setFilesReferences(filesReferences);
+
+    for await (const delta of readStreamableValue(output)) {
+      if (delta) {
+        setAnswer((ans) => ans + delta);
+      }
+    }
+
+    setLoading(false);
   }
 
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[80vw]">
           <DialogHeader>
-            <DialogTitle>{question}</DialogTitle>
+            <div className="flex items-center gap-2">
+              <DialogTitle>{question}</DialogTitle>
+
+              <Button
+                variant="outline"
+                disabled={saveAnswer.isPending}
+                onClick={() =>
+                  saveAnswer.mutate(
+                    {
+                      projectId: project.id,
+                      question,
+                      answer,
+                      filesReferences,
+                    },
+
+                    {
+                      onSuccess: () => toast.success("Answer saved"),
+
+                      onError: () => toast.error("Failed saving answer"),
+                    },
+                  )
+                }
+              >
+                Save Answer
+              </Button>
+            </div>
           </DialogHeader>
+
+          <MDEditor.Markdown
+            source={answer}
+            className="!h-full max-h-[40vh] max-w-[70vw] overflow-scroll p-5"
+          />
+
+          <div className="h-4"></div>
+          <CodeReferences filesReferences={filesReferences} />
+
+          <Button type="button" onClick={() => setOpen(false)}>
+            Close
+          </Button>
         </DialogContent>
       </Dialog>
 
@@ -48,7 +116,9 @@ function AskQuestionCard() {
 
             <div className="h-4"></div>
 
-            <Button type="submit">Ask AI!</Button>
+            <Button type="submit" disabled={loading}>
+              Ask AI!
+            </Button>
           </form>
         </CardContent>
       </Card>
