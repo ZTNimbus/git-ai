@@ -17,6 +17,7 @@ import { readStreamableValue } from "ai/rsc";
 import CodeReferences from "./code-rerefences";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
+import useRefetch from "~/hooks/use-refetch";
 
 function AskQuestionCard() {
   const { project } = useProject();
@@ -32,6 +33,7 @@ function AskQuestionCard() {
   >([]);
   const [answer, setAnswer] = useState("");
   const saveAnswer = api.project.saveAnswer.useMutation();
+  const refetch = useRefetch();
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -75,7 +77,10 @@ function AskQuestionCard() {
                     },
 
                     {
-                      onSuccess: () => toast.success("Answer saved"),
+                      onSuccess: () => {
+                        toast.success("Answer saved");
+                        refetch();
+                      },
 
                       onError: () => toast.error("Failed saving answer"),
                     },
