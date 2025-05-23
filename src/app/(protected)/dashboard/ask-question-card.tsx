@@ -121,7 +121,7 @@ function AskQuestionCard() {
 
             <div className="h-4"></div>
 
-            <Button type="submit" disabled={loading}>
+            <Button type="submit" disabled={loading} className="cursor-pointer">
               Ask AI!
             </Button>
           </form>
