@@ -1,5 +1,7 @@
 "use client";
 
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { Presentation, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -16,6 +18,23 @@ function MeetingCard() {
   const [progress, setProgress] = useState(0);
   const { project } = useProject();
   const router = useRouter();
+  const processMeeting = useMutation({
+    mutationFn: async (data: {
+      meetingUrl: string;
+      meetingId: string;
+      projectId: string;
+    }) => {
+      const { meetingId, meetingUrl, projectId } = data;
+
+      const response = await axios.post("/api/process-meeting", {
+        meetingUrl,
+        meetingId,
+        projectId,
+      });
+
+      return response.data;
+    },
+  });
   const [isUploading, setIsUploading] = useState(false);
   const uploadMeeting = api.project.uploadMeeting.useMutation();
   const { getRootProps, getInputProps } = useDropzone({
@@ -30,25 +49,31 @@ function MeetingCard() {
       const file = acceptedFiles[0];
       if (!file) return;
 
-      const downloadUrl = await uploadFile(file as File, setProgress);
+      const downloadUrl = (await uploadFile(
+        file as File,
+        setProgress,
+      )) as string;
 
       uploadMeeting.mutate(
         {
           projectId: project.id,
-          meetingUrl: downloadUrl as string,
+          meetingUrl: downloadUrl,
           name: file.name,
         },
         {
-          onSuccess: () => {
+          onSuccess: (meeting) => {
             toast.success("Successfully uploaded meeting");
-
             router.push("/meetings");
+            processMeeting.mutateAsync({
+              meetingUrl: downloadUrl,
+              meetingId: meeting.id,
+              projectId: project.id,
+            });
           },
 
           onError: () => toast.error("Meeting upload failed"),
         },
       );
-      alert(downloadUrl);
       setIsUploading(false);
     },
   });
@@ -60,7 +85,7 @@ function MeetingCard() {
     >
       {!isUploading && (
         <>
-          <Presentation className="mt-1 size-8 animate-bounce" />
+          <Presentation className="text-primary mt-1 size-8 animate-bounce" />
 
           <h3 className="text-sm font-semibold text-gray-900">
             Create a new meeting
@@ -73,7 +98,7 @@ function MeetingCard() {
           </p>
 
           <div className="">
-            <Button disabled={isUploading}>
+            <Button disabled={isUploading} className="cursor-pointer">
               <Upload className="mr-1.5 -ml-0.5 size-5" aria-hidden={true} />
               Upload Meeting
               <input className="hidden" {...getInputProps()} />

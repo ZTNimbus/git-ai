@@ -18,7 +18,7 @@ type Response = {
 };
 
 export const getCommitHashes = async (githubUrl: string) => {
-  const [owner, repo] = githubUrl.split("/").slice(-2);
+  const [owner, repo] = githubUrl?.split("/").slice(-2);
 
   if (!owner || !repo) throw new Error("Invalid Github URL");
 

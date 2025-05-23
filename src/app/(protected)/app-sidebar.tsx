@@ -56,7 +56,13 @@ function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
+                <SidebarMenuItem
+                  key={item.title}
+                  className={cn({
+                    "hover:text-primary hover:bg-black/10":
+                      pathname !== item.url,
+                  })}
+                >
                   <SidebarMenuButton asChild>
                     <Link
                       href={item.url}
@@ -103,7 +109,11 @@ function AppSidebar() {
               {open && (
                 <SidebarMenuItem>
                   <Link href={"/create"}>
-                    <Button variant={"outline"} className="w-fit" size={"sm"}>
+                    <Button
+                      variant={"outline"}
+                      className="w-fit cursor-pointer"
+                      size={"sm"}
+                    >
                       <Plus />
                       Create Project
                     </Button>
