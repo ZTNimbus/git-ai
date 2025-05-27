@@ -42,8 +42,8 @@ function AppSidebar() {
       <SidebarHeader>
         <div className="flex items-center gap-2">
           {open && (
-            <span className="text-primary/90 text-3xl font-black tracking-tighter">
-              Git AI
+            <span className="text-primary/90 text-4xl font-black tracking-tighter">
+              Git<strong className="text-blue-400">AI</strong>
             </span>
           )}
         </div>
