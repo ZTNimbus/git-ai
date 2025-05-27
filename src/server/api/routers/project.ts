@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { pollCommits } from "~/lib/github";
-import { indexGithubRepo } from "~/lib/github-loader";
+import { checkCredits, indexGithubRepo } from "~/lib/github-loader";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const projectRouter = createTRPCRouter({
@@ -13,6 +13,19 @@ export const projectRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: ctx.user.userId },
+        select: { credits: true },
+      });
+
+      if (!user) throw new Error("User not found");
+
+      const currentCredits = user.credits || 0;
+
+      const fileCount = await checkCredits(input.githubUrl, input.githubToken);
+
+      if (currentCredits < fileCount) throw new Error("Not enough credits");
+
       const project = await ctx.db.project.create({
         data: {
           githubUrl: input.githubUrl,
@@ -23,6 +36,12 @@ export const projectRouter = createTRPCRouter({
 
       await indexGithubRepo(project.id, input.githubUrl, input.githubToken);
       await pollCommits(project.id);
+
+      await ctx.db.user.update({
+        where: { id: ctx.user.userId },
+        data: { credits: { decrement: fileCount } },
+      });
+
       return project;
     }),
 
@@ -200,5 +219,31 @@ export const projectRouter = createTRPCRouter({
           user: true,
         },
       });
+    }),
+
+  getCredits: protectedProcedure.query(async ({ ctx }) => {
+    return await ctx.db.user.findUnique({
+      where: { id: ctx.user.userId },
+      select: {
+        credits: true,
+      },
+    });
+  }),
+
+  checkCredits: protectedProcedure
+    .input(
+      z.object({
+        githubUrl: z.string(),
+        githubToken: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const fileCount = await checkCredits(input.githubUrl, input.githubToken);
+      const userCredits = await ctx.db.user.findUnique({
+        where: { id: ctx.user.userId },
+        select: { credits: true },
+      });
+
+      return { fileCount, userCredits: userCredits?.credits || 0 };
     }),
 });
