@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { NextResponse, type NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { z } from "zod";
 import { processMeeting } from "~/lib/assembly";
 import { db } from "~/server/db";

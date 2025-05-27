@@ -1,7 +1,7 @@
 import { GithubRepoLoader } from "@langchain/community/document_loaders/web/github";
 import { db } from "~/server/db";
 import { generateEmbedding, summariseCode } from "./gemini";
-import type { Document } from "@langchain/core/documents";
+import { Document } from "@langchain/core/documents";
 import { Octokit } from "octokit";
 
 export async function loadGithubRepo(githubUrl: string, githubToken?: string) {
@@ -69,6 +69,7 @@ async function generateEmbeddings(docs: Document[]) {
         summary,
         embedding,
         sourceCode: JSON.parse(JSON.stringify(doc.pageContent)),
+        fileName: doc.metadata.source,
       };
     }),
   );

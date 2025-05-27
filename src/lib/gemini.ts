@@ -65,7 +65,7 @@ Generate a single-line commit message following the format guidelines above
 Ensure the message is clear, accurate, and follows conventional commit standards
 
 Output Format
-Provide only the commit message as a single line of text, without any additional explanation or formatting.
+Provide only the commit message as lines of text for every noticable change, without any additional explanation or formatting.
     `,
   ]);
 
@@ -89,6 +89,10 @@ export async function summariseCode(doc: Document) {
     Give a summary no more than 100 words of the code above.
     `,
     ]);
+
+    console.log("triggered ai");
+
+    console.log(response.response.text());
 
     return response.response.text();
   } catch (error) {

@@ -29,7 +29,7 @@ const items = [
   { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
   { title: "Q&A", url: "/qa", icon: Bot },
   { title: "Meetings", url: "/meetings", icon: Presentation },
-  { title: "Billing", url: "/billing", icon: CreditCard },
+  { title: "Credits", url: "/billing", icon: CreditCard },
 ];
 
 function AppSidebar() {

@@ -18,6 +18,7 @@ import CodeReferences from "./code-rerefences";
 import { api } from "~/trpc/react";
 import { toast } from "sonner";
 import useRefetch from "~/hooks/use-refetch";
+import { Info } from "lucide-react";
 
 function AskQuestionCard() {
   const { project } = useProject();
@@ -59,7 +60,7 @@ function AskQuestionCard() {
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="sm:max-w-[80vw]">
+        <DialogContent className="sm:max-w-[75vw] lg:max-w-[60vw]">
           <DialogHeader>
             <div className="flex items-center gap-2">
               <DialogTitle>{question}</DialogTitle>
@@ -94,7 +95,7 @@ function AskQuestionCard() {
 
           <MDEditor.Markdown
             source={answer}
-            className="!h-full max-h-[40vh] max-w-[70vw] overflow-scroll p-5"
+            className="!h-full max-h-[30vh] max-w-[70vw] overflow-scroll p-5"
           />
 
           <div className="h-4"></div>
@@ -118,6 +119,14 @@ function AskQuestionCard() {
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
             />
+
+            <div className="mt-2 flex items-center gap-1">
+              <Info className="size-3" />
+              <p className="text-muted-foreground text-xs">
+                Try modifying your prompt if your initial question does not
+                bring results.
+              </p>
+            </div>
 
             <div className="h-4"></div>
 
