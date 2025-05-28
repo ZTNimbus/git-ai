@@ -7,9 +7,11 @@ import useRefetch from "~/hooks/use-refetch";
 import { api } from "~/trpc/react";
 
 function ArchiveButton() {
-  const { projectId } = useProject();
+  const { projectId, setProjectId } = useProject();
   const refetch = useRefetch();
   const archiveProject = api.project.archiveProject.useMutation();
+
+  if (!projectId) return null;
 
   return (
     <Button
@@ -28,6 +30,7 @@ function ArchiveButton() {
             {
               onSuccess: () => {
                 toast.success("Project successfully archived");
+                setProjectId("");
                 refetch();
               },
 

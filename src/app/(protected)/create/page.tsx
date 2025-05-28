@@ -1,7 +1,8 @@
 "use client";
 
-import { GitBranch, Info } from "lucide-react";
+import { GitBranch, Info, InfoIcon } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -102,8 +103,23 @@ function Create() {
 
             <Input
               {...register("githubToken")}
-              placeholder="Github Token(optional, only required for private repositories)"
+              placeholder="Github Token(optional, enter if your project fails)"
             />
+            <div className="flex items-center gap-1">
+              <InfoIcon className="size-3" />
+              <p className="text-muted-foreground mt-1 max-w-100 text-xs">
+                Grab your token{" "}
+                <Link
+                  href={"https://github.com/settings/tokens"}
+                  target="_blank"
+                  className="cursor-pointer text-purple-500 underline"
+                >
+                  here.{" "}
+                </Link>
+                Github Tokens are crucial if your project size is large and you
+                fail creating your project due to Rate Limiting.
+              </p>
+            </div>
 
             {!!checkCredits.data && (
               <>

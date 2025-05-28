@@ -16,6 +16,8 @@ function InviteButton() {
   const { projectId } = useProject();
   const [open, setOpen] = useState(false);
 
+  if (!projectId) return null;
+
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
